@@ -36,6 +36,7 @@ app.get('/weather', async (req, res) => {
         temperature: minuteForecast.values.temperature,
         // humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
+        dewPoint: minuteForecast.values.dewPoint,
         dewPoint: minuteForecast.values.dewPoint
         // Add more weather parameters as needed
       };
