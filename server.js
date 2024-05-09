@@ -34,11 +34,11 @@ app.get('/weather', async (req, res) => {
     // Extract weather parameters
     const weatherData = {
         temperature: minuteForecast.values.temperature,
+        dewPoint: minuteForecast.values.dewPoint,
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
         windGust: minuteForecast.values.windGust,
-        dewPoint: minuteForecast.values.dewPoint
         // Add more weather parameters as needed
       };
    // Assuming the API response contains weather data
