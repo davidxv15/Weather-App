@@ -1,12 +1,20 @@
 const express = require('express'); // Corrected require statement
 const axios = require('axios'); // Added import statement for axios
+const cors = require('cors');
 const app = express(); // Corrected variable name
 
 
 const port = 3000;
 
 app.use(express.json()); // Corrected middleware setup
+app.use(cors());
 
+
+const unitMappings = {
+    "Celsius": "Fahrenheit", // Add Celsius to Fahrenheit conversion
+    // Add more mappings as needed
+  };
+  
 // Define route to fetch weather data
 app.get('/weather', async (req, res) => {
   try {
@@ -17,6 +25,7 @@ app.get('/weather', async (req, res) => {
         // location: req.query.location
         location: '42.3478,-71.0466', 
         apikey:'1KF9l15qvhMPJXIDgtAuTFvIgDw1Tbcx',
+        fields: 'temperature,temperatureApparent,uvIndex',
       }
     });
 
@@ -31,7 +40,7 @@ app.get('/weather', async (req, res) => {
     // if (response.data.timelines && response.data.timelines.length > 0 &&
     //     response.data.timelines[0].intervals && response.data.timelines[0].intervals.length > 0) {
 
-    // Extract weather parameters
+    // weather parameters
     const weatherData = {
         weatherCode: minuteForecast.values.weatherCode,
         temperature: minuteForecast.values.temperature,
@@ -45,8 +54,12 @@ app.get('/weather', async (req, res) => {
         visibility: minuteForecast.values.visibility,
         sunriseTime: minuteForecast.values.sunriseTime,
         sunsetTime: minuteForecast.values.sunsetTime
-        // Add more weather parameters as needed
       };
+
+ // Convert temperature values from Celsius to Fahrenheit
+ weatherData.temperature.value = convertTemperature(weatherData.temperature.value);
+ weatherData.temperatureApparent.value = convertTemperature(weatherData.temperatureApparent.value);
+
    // Assuming the API response contains weather data
     res.json(weatherData);
 } else {
@@ -73,6 +86,10 @@ app.post('/weather', (req, res) => {
         res.send('Welcome to the Weather App!');
       });
 
+
+function convertTemperature(celsius) {
+        return (celsius * 9/5) + 32;
+      }      
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
