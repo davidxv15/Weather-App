@@ -6,7 +6,7 @@ const app = express(); // Corrected variable name
 
 const port = 3000;
 
-app.use(express.json()); // Corrected middleware setup
+app.use(express.json()); // middleware setup 
 app.use(cors());
 
 
@@ -17,6 +17,7 @@ const unitMappings = {
   
 // Define route to fetch weather data
 app.get('/weather', async (req, res) => {
+    console.log('Route handler is executing');
   try {
     // Make a request to an external weather API (replace 'YOUR_API_KEY' with your actual API key)
     const response = await axios.get('https://api.tomorrow.io/v4/weather/forecast', {
@@ -40,6 +41,11 @@ app.get('/weather', async (req, res) => {
     // if (response.data.timelines && response.data.timelines.length > 0 &&
     //     response.data.timelines[0].intervals && response.data.timelines[0].intervals.length > 0) {
 
+
+    // Log temperature values before conversion
+console.log('Temperature Celsius:', minuteForecast.values.temperature);
+console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureApparent);
+
     // weather parameters
     const weatherData = {
         weatherCode: minuteForecast.values.weatherCode,
@@ -50,15 +56,21 @@ app.get('/weather', async (req, res) => {
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
-        windGust: minuteForecast.values.windGust,
-        visibility: minuteForecast.values.visibility,
-        sunriseTime: minuteForecast.values.sunriseTime,
-        sunsetTime: minuteForecast.values.sunsetTime
+        // windGust: minuteForecast.values.windGust,
+        // visibility: minuteForecast.values.visibility,
+        // sunriseTime: minuteForecast.values.sunriseTime,
+        // sunsetTime: minuteForecast.values.sunsetTime
       };
 
+
+ 
+      
  // Convert temperature values from Celsius to Fahrenheit
  weatherData.temperature.value = convertTemperature(weatherData.temperature.value);
  weatherData.temperatureApparent.value = convertTemperature(weatherData.temperatureApparent.value);
+
+ console.log('Temperature Fahrenheit:', weatherData.temperature.value);
+        console.log('Temperature Apparent Fahrenheit:', weatherData.temperatureApparent.value);
 
    // Assuming the API response contains weather data
     res.json(weatherData);
@@ -87,9 +99,14 @@ app.post('/weather', (req, res) => {
       });
 
 
+      
 function convertTemperature(celsius) {
         return (celsius * 9/5) + 32;
       }      
+      // Test the convertTemperature function
+console.log(convertTemperature(0)); // Should log 32
+console.log(convertTemperature(100)); // Should log 212
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
