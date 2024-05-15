@@ -48,16 +48,16 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
 
     // weather parameters
     const weatherData = {
-        weatherCode: minuteForecast.values.weatherCode,
+        // weatherCode: minuteForecast.values.weatherCode,
         temperature: minuteForecast.values.temperature,
-        temperatureApparent: minuteForecast.values.temperatureApparent,
-        uvIndex: minuteForecast.values.uvIndex,
+        // temperatureApparent: minuteForecast.values.temperatureApparent,
+        // uvIndex: minuteForecast.values.uvIndex,
         dewPoint: minuteForecast.values.dewPoint,
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
+        // visibility: minuteForecast.values.visibility
         // windGust: minuteForecast.values.windGust,
-        // visibility: minuteForecast.values.visibility,
         // sunriseTime: minuteForecast.values.sunriseTime,
         // sunsetTime: minuteForecast.values.sunsetTime
       };
