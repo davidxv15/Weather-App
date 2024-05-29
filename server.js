@@ -1,46 +1,47 @@
-const express = require('express'); // Corrected require statement
-const axios = require('axios'); // Added import statement for axios
+const express = require('express'); // Corrected _require_ statement
+const axios = require('axios');
 const cors = require('cors');
-const app = express(); // Corrected variable name
+const dotenv = require('dotenv');
 
+dotenv.config(); // Load environment variable
 
+const app = express(); 
 const port = 3000;
 
-app.use(express.json()); // middleware setup 
+app.use(express.json()); // middleware
 app.use(cors());
 
+const apiKey = process.env.API_KEY;
 
-const unitMappings = {
-    "Celsius": "Fahrenheit", // Add Celsius to Fahrenheit conversion
-    // Add more mappings as needed
-  };
+// const unitMappings = {
+//     "Celsius": "Fahrenheit", // Add Celsius to Fahrenheit conversion
+//   };
   
 // Define route to fetch weather data
 app.get('/weather', async (req, res) => {
     console.log('Route handler is executing');
+    const location = req.query.location;
+
+    if (!location) {
+      return res.status(400).json({ message: 'Location parameter is required' });
+    }
+
   try {
-    // Make a request to an external weather API (replace 'YOUR_API_KEY' with your actual API key)
+    // request to external API (tommorow.io for this one)
     const response = await axios.get('https://api.tomorrow.io/v4/weather/forecast', {
       params: {
-        // You can pass query parameters if needed (e.g., location)
-        // location: req.query.location
-        location: '42.3478,-71.0466', 
-        apikey:'1KF9l15qvhMPJXIDgtAuTFvIgDw1Tbcx',
-        fields: 'temperature,temperatureApparent,uvIndex',
+        location, 
+        apikey: apiKey,
+        fields: 'temperature,temperatureApparent,uvIndexdewPoint,humidity,windSpeed,windDirection',
       }
     });
 
-    console.log('API Response:', response.data); // Log the API response
+    console.log('API Response:', response.data); // API response
 
-    // Check if the response contains the necessary data
+    // Check if  response contains needed data
     if (response.data.timelines && response.data.timelines.minutely && response.data.timelines.minutely.length > 0) {
         // Get the first minute forecast
         const minuteForecast = response.data.timelines.minutely[0];
-  
-      
-    // if (response.data.timelines && response.data.timelines.length > 0 &&
-    //     response.data.timelines[0].intervals && response.data.timelines[0].intervals.length > 0) {
-
 
     // Log temperature values before conversion
 console.log('Temperature Celsius:', minuteForecast.values.temperature);
@@ -66,9 +67,6 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
  
       
  // Convert temperature values from Celsius to Fahrenheit
-//  weatherData.temperature.value = convertTemperature(weatherData.temperature.value);
-//  weatherData.temperatureApparent.value = convertTemperature(weatherData.temperatureApparent.value);
-
  console.log('Temperature Fahrenheit:', weatherData.temperature.value);
         console.log('Temperature Apparent Fahrenheit:', weatherData.temperatureApparent.value);
 
@@ -87,10 +85,10 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
   }
 });
 
-// Define route to save weather data to database (to be implemented later)
+// route to save weather data to database (later)
 app.post('/weather', (req, res) => {
-  // Placeholder for saving weather data to database
-  // This will be implemented when you connect your database
+  // placeholder for saving weather data to database
+  // will be implemented on connect of dB
   res.status(501).json({ message: 'Not implemented' });
 });
 
@@ -103,9 +101,8 @@ app.post('/weather', (req, res) => {
 function convertTemperature(celsius) {
         return (celsius * 9/5) + 32;
       }      
-      // Test the convertTemperature function
-console.log(convertTemperature(0)); // Should log 32
-console.log(convertTemperature(100)); // Should log 212
+console.log(convertTemperature(0)); 
+console.log(convertTemperature(100));
 
 // Start the server
 app.listen(port, () => {
