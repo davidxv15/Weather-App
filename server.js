@@ -12,27 +12,46 @@ app.use(express.json()); // middleware
 app.use(cors());
 
 const apiKey = process.env.API_KEY;
+const geoApiKey = process.env.GEO_API_KEY;
 
-// const unitMappings = {
-//     "Celsius": "Fahrenheit", // Add Celsius to Fahrenheit conversion
-//   };
-  
+// Function to gets coordinates from location typed
+async function getCoordinates(location) {
+  const response = await axios.get('https://api.opencagedata.com/geocode/v1/json', {
+    params: {
+      q: location,
+      key: geoApiKey,
+    },
+  });
+  const data = response.data;
+
+  if (data.results.length > 0) {
+    const { lat, lng } = data.results[0].geometry;
+    return { lat, lng };
+  } else {
+    throw new Error('Location not found');
+  }
+}
+
 // Define route to fetch weather data
 app.get('/weather', async (req, res) => {
     console.log('Route handler is executing');
     const location = req.query.location;
+    console.log('Received location: ', location);
 
     if (!location) {
       return res.status(400).json({ message: 'Location parameter is required' });
     }
 
   try {
+    const { lat, lng } = await getCoordinates(location);
+    console.log(`Coordinates for ${location}: ${lat}, ${lng}`);
+
     // request to external API (tommorow.io for this one)
     const response = await axios.get('https://api.tomorrow.io/v4/weather/forecast', {
       params: {
-        location, 
+        location: `${lat},${lng}`, 
         apikey: apiKey,
-        fields: 'temperature,temperatureApparent,uvIndexdewPoint,humidity,windSpeed,windDirection',
+        fields: 'temperature,temperatureApparent,uvIndex,dewPoint,humidity,windSpeed,windDirection',
       }
     });
 
