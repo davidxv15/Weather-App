@@ -13,6 +13,7 @@ app.use(cors());
 
 const apiKey = process.env.API_KEY;
 const geoApiKey = process.env.GEO_API_KEY;
+const googlePlacesApiKey = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
 
 // Function to gets coordinates from location typed
 async function getCoordinates(location) {
@@ -101,6 +102,24 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
     // Handle errors
     console.error('Error fetching weather data:', error);
     res.status(500).json({ message: 'Internal server is an eRRor' });
+  }
+});
+
+// Route to fetch place suggestions
+app.get('/places', async (req, res) => {
+  const { input } = req.query;
+
+  if (!input) {
+    return res.status(400).json({ message: 'Input parameter is required' });
+  }
+
+  try {
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${googlePlacesApiKey}`;
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching place suggestions:', error);
+    res.status(500).json({ message: 'Error fetching place suggestions' });
   }
 });
 
