@@ -2,6 +2,7 @@ const express = require('express'); // Corrected _require_ statement
 const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
 
 dotenv.config(); // Load environment variable
 
@@ -14,6 +15,22 @@ app.use(cors());
 const apiKey = process.env.API_KEY;
 const geoApiKey = process.env.GEO_API_KEY;
 const googlePlacesApiKey = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
+const mongoUri = process.env.MONGODB_URI;
+
+console.log("Connecting to MongoDB...");
+
+let db;
+let favoritesCollection;
+
+MongoClient.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    db = client.db('weatherApp');
+    favoritesCollection = db.collection('favorites');
+    console.log('Connected to MongoDB');
+  })
+  .catch(error => {
+    console.error('Error connecting to MongoDB:', error);
+  });
 
 // Function to gets coordinates from location typed
 async function getCoordinates(location) {
@@ -77,10 +94,10 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
-        // visibility: minuteForecast.values.visibility
-        // windGust: minuteForecast.values.windGust,
         // sunriseTime: minuteForecast.values.sunriseTime,
         // sunsetTime: minuteForecast.values.sunsetTime
+        // visibility: minuteForecast.values.visibility
+        // windGust: minuteForecast.values.windGust,
       };
 
 
@@ -102,6 +119,37 @@ console.log('Temperature Apparent Celsius:', minuteForecast.values.temperatureAp
     // Handle errors
     console.error('Error fetching weather data:', error);
     res.status(500).json({ message: 'Internal server is an eRRor' });
+  }
+});
+
+app.post('/favorites', async (req, res) => {
+  const { location } = req.body;
+  if (!location) {
+    return res.status(400).json({ message: 'Location is required' });
+  }
+
+  try {
+    const existingFavorite = await favoritesCollection.findOne({ location });
+    if (existingFavorite) {
+      await favoritesCollection.deleteOne({ location });
+      res.json({ message: 'Location removed from favorites' });
+    } else {
+      await favoritesCollection.insertOne({ location });
+      res.json({ message: 'Location added to favorites' });
+    }
+  } catch (error) {
+    console.error('Error handling favorite:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/favorites', async (req, res) => {
+  try {
+    const favorites = await favoritesCollection.find().toArray();
+    res.json(favorites);
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
