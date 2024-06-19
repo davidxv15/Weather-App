@@ -56,6 +56,18 @@ async function getCoordinates(location) {
   }
 }
 
+// Function to get sunrise and sunset times
+async function getSunriseSunsetTimes(lat, lng) {
+  const response = await axios.get("https://api.sunrise-sunset.org/json", {
+    params: {
+      lat: lat,
+      lng: lng,
+      formatted: 0,
+    },
+  });
+  return response.data.results;
+}
+
 // Define route to fetch weather data
 app.get("/weather", async (req, res) => {
   console.log("Route handler is executing");
@@ -70,7 +82,7 @@ app.get("/weather", async (req, res) => {
     const { lat, lng } = await getCoordinates(location);
     console.log(`Coordinates for ${location}: ${lat}, ${lng}`);
 
-    // request to external API (tommorow.io for this one)
+    // request to external API (tommorow.io )
     const response = await axios.get(
       "https://api.tomorrow.io/v4/weather/forecast",
       {
@@ -78,7 +90,7 @@ app.get("/weather", async (req, res) => {
           location: `${lat},${lng}`,
           apikey: apiKey,
           fields:
-            "temperature,temperatureApparent,uvIndex,dewPoint,humidity,windSpeed,windDirection,sunriseTime,sunsetTime",
+            "temperature,temperatureApparent,uvIndex,dewPoint,humidity,windSpeed,windDirection",
         },
       }
     );
@@ -93,6 +105,9 @@ app.get("/weather", async (req, res) => {
     ) {
       // Get the first minute forecast
       const minuteForecast = response.data.timelines.minutely[0];
+
+      // Get sunrise and sunset times
+       const { sunrise, sunset } = await getSunriseSunsetTimes(lat, lng);
 
       // Log temperature values before conversion
       console.log("Temperature Celsius:", minuteForecast.values.temperature);
@@ -111,8 +126,8 @@ app.get("/weather", async (req, res) => {
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
-        sunriseTime: minuteForecast.values.sunriseTime,
-        sunsetTime: minuteForecast.values.sunsetTime
+        sunriseTime: sunrise,
+        sunsetTime: sunset,
         // visibility: minuteForecast.values.visibility
         // windGust: minuteForecast.values.windGust,
       };
@@ -136,6 +151,8 @@ app.get("/weather", async (req, res) => {
     res.status(500).json({ message: "Internal server is an eRRor" });
   }
 });
+
+//define my routes...
 
 app.post("/favorites", async (req, res) => {
   const { location } = req.body;
@@ -194,7 +211,7 @@ app.post("/weather", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Weather App!");
+  res.send("Weather");
 });
 
 function convertTemperature(celsius) {
