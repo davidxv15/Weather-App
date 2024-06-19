@@ -78,7 +78,7 @@ app.get("/weather", async (req, res) => {
           location: `${lat},${lng}`,
           apikey: apiKey,
           fields:
-            "temperature,temperatureApparent,uvIndex,dewPoint,humidity,windSpeed,windDirection",
+            "temperature,temperatureApparent,uvIndex,dewPoint,humidity,windSpeed,windDirection,sunriseTime,sunsetTime",
         },
       }
     );
