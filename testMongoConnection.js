@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const uri = "mongodb+srv://davidxvaz:UzJsu7NF3X3hntYU@clusterweather.9n4b9ot.mongodb.net/weatherApp?retryWrites=true&w=majority";
+const uri = "mongodb+srv://davidxvaz:UzJsu7NF3X3hntYU@clusterchat.ufour.mongodb.net/weatherApp?retryWrites=true&w=majority";
 
 async function connect() {
     try {

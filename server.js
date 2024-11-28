@@ -13,6 +13,7 @@ app.use(express.json()); // middleware
 app.use(cors());
 
 const apiKey = process.env.API_KEY;
+console.log("Using API Key:", apiKey);
 const geoApiKey = process.env.GEO_API_KEY;
 const googlePlacesApiKey = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
 const mongoUri = process.env.MONGODB_URI;
@@ -108,6 +109,7 @@ app.get("/weather", async (req, res) => {
 
       // Get sunrise and sunset times
        const { sunrise, sunset } = await getSunriseSunsetTimes(lat, lng);
+       console.log(`Sunrise: ${sunrise}, Sunset: ${sunset}`);
 
       // Log temperature values before conversion
       console.log("Temperature Celsius:", minuteForecast.values.temperature);
