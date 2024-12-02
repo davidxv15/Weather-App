@@ -155,7 +155,7 @@ app.get("/weather", async (req, res) => {
 });
 
 //define my routes...
-open
+
 app.post("/favorites", async (req, res) => {
   const { location } = req.body;
   if (!location) {
