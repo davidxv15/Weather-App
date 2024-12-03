@@ -1,6 +1,6 @@
-# Weather App Backend ⛈️
+# Weather App Backend ⛈️  
 
-The backend server for the Weather App, built with Node.js and Express.js, providing weather data and user-specific favorites.
+The backend server for the Weather App, built with Node.js and Express.js, provides weather data and user-specific favorites.
 
 ## How the Backend Works
 
