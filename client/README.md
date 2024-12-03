@@ -41,4 +41,9 @@ The backend server for the Weather App, built with Node.js and Express.js, provi
 5. The server will run on:  
 `http://localhost:3000`  
 
+**Future Features:** 
+* **User Authentication**: Add user login to manage personalized settings.  
+* **Cached Data**: Implement caching to reduce API requests for faster responses.  
+* **Admin Dashboard:**: Manage API keys and track usage directly from the app.  
 
+**Deployment**
