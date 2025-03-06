@@ -128,6 +128,7 @@ app.get("/weather", async (req, res) => {
         humidity: minuteForecast.values.humidity,
         windSpeed: minuteForecast.values.windSpeed,
         windDirection: minuteForecast.values.windDirection,
+        localTime: minuteForecast.time,
         sunriseTime: sunrise,
         sunsetTime: sunset,
         // visibility: minuteForecast.values.visibility
