@@ -16,6 +16,7 @@ const apiKey = process.env.API_KEY;
 console.log("Using API Key:", apiKey);
 const geoApiKey = process.env.GEO_API_KEY;
 const googlePlacesApiKey = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
+const googleTimezoneApiKey = process.env.GOOGLE_TIMEZONE_API_KEY;
 const mongoUri = process.env.MONGODB_URI;
 
 console.log("Connecting to MongoDB...");
