@@ -16,7 +16,6 @@ const apiKey = process.env.API_KEY;
 console.log("Using API Key:", apiKey);
 const geoApiKey = process.env.GEO_API_KEY;
 const googlePlacesApiKey = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
-const googleTimezoneApiKey = process.env.GOOGLE_TIMEZONE_API_KEY;
 const mongoUri = process.env.MONGODB_URI;
 
 console.log("Connecting to MongoDB...");
@@ -60,50 +59,14 @@ async function getCoordinates(location) {
 
 // Function to get sunrise and sunset times
 async function getSunriseSunsetTimes(lat, lng) {
-  try {
-    // Step 1: Fetch sunrise and sunset in UTC
-    const sunResponse = await axios.get("https://api.sunrise-sunset.org/json", {
-      params: { lat, lng, formatted: 0 },
-    });
-
-    const { sunrise, sunset } = sunResponse.data.results;
-    console.log("Raw UTC Sunrise:", sunrise, "| Raw UTC Sunset:", sunset);
-
-    // Step 2: Fetch the time zone for the searched location
-    const timezoneResponse = await axios.get("https://maps.googleapis.com/maps/api/timezone/json", {
-      params: {
-        location: `${lat},${lng}`,
-        timestamp: Math.floor(Date.now() / 1000), // Current time in seconds
-        key: googleTimezoneApiKey,
-      },
-    });
-
-    const { timeZoneId } = timezoneResponse.data;
-    console.log(`Time Zone for location: ${timeZoneId}`);
-
-    // Step 3: Convert UTC sunrise/sunset to the city's local time
-    const localSunrise = convertUTCToLocalTime(sunrise, timeZoneId);
-    const localSunset = convertUTCToLocalTime(sunset, timeZoneId);
-
-    console.log(`Converted Sunrise: ${localSunrise} | Converted Sunset: ${localSunset}`);
-
-    return { sunrise: localSunrise, sunset: localSunset };
-  } catch (error) {
-    console.error("Error fetching sunrise/sunset or timezone:", error);
-    return { sunrise: "N/A", sunset: "N/A" };
-  }
-}
-
-// Function to convert UTC time to the city's local time
-function convertUTCToLocalTime(utcTime, timeZone) {
-  const date = new Date(utcTime);
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true, // Adjust this for 24-hour format
-  }).format(date);
+  const response = await axios.get("https://api.sunrise-sunset.org/json", {
+    params: {
+      lat: lat,
+      lng: lng,
+      formatted: 0,
+    },
+  });
+  return response.data.results;
 }
 
 // Define route to fetch weather data
@@ -172,10 +135,10 @@ app.get("/weather", async (req, res) => {
       };
 
       // Convert temperature values from Celsius to Fahrenheit
-      console.log("Temperature Fahrenheit:", convertTemperature(weatherData.temperature));
-console.log(
-  "Temperature Apparent Fahrenheit:",
-  convertTemperature(weatherData.temperatureApparent)
+      console.log("Temperature Fahrenheit:", weatherData.temperature.value);
+      console.log(
+        "Temperature Apparent Fahrenheit:",
+        weatherData.temperatureApparent.value
       );
 
       // Assuming the API response contains weather data
